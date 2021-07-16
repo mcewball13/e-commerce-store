@@ -12,7 +12,14 @@ router.get("/", (req, res) => {
                 attributes: ["product_name"],
             },
         ],
-    });
+    })
+        .then((dbCatData) => {
+            res.json(dbCatData);
+        })
+        .catch((err) => {
+            res.status(500).json(err);
+            console.log(err);
+        });
     // find all categories
     // be sure to include its associated Products
 });
@@ -22,14 +29,21 @@ router.get("/:id", (req, res) => {
         where: {
             id: req.params.id,
         },
-        attributes: ["id", "category_name"],
+        attributes: ["category_name"],
         include: [
             {
                 model: Product,
                 attributes: ["product_name"],
             },
         ],
-    });
+    })
+    .then((dbCatData) => {
+        res.json(dbCatData);
+    })
+    .catch((err) => {
+        res.status(500).json(err);
+        console.log(err);
+    });;
     // find one category by its `id` value
     // be sure to include its associated Products
 });
@@ -68,6 +82,19 @@ router.put("/:id", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     // delete a category by its `id` value
+    Category.destroy({ where: { id: req.params.id } })
+      .then((dbTagData) => {
+        if (!dbTagData) {
+          res.status(400).json({ message: "That tag doesn't exist" })
+          return;
+
+      }
+            res.status(200).json({ message: "deleted" });
+        })
+        .catch((err) => {
+            res.status(500).json(err);
+            console.log(err);
+        });
 });
 
 module.exports = router;
